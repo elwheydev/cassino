@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vegas Slot - Demo</title>
+
+<style>
+body{
+    margin:0;
+    background: radial-gradient(circle at center,#2b0000,#000);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple Color Emoji","Segoe UI Emoji",Arial;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    color:white;
+}
+
+.machine{
+    width:360px;
+    background:linear-gradient(180deg,#b8860b,#5a0000);
+    border:8px solid gold;
+    border-radius:25px;
+    padding:25px;
+    text-align:center;
+    box-shadow:0 0 40px gold;
+}
+
+.title{
+    font-size:22px;
+    margin-bottom:10px;
+}
+
+.credits{
+    background:black;
+    padding:8px;
+    border-radius:8px;
+    margin-bottom:15px;
+}
+
+.reels{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin:20px 0;
+}
+
+.reel{
+    width:90px;
+    height:110px;
+    overflow:hidden;
+    border:3px solid #222;
+    border-radius:10px;
+    background:#111;
+    position:relative;
+}
+
+.strip{
+    position:absolute;
+    width:100%;
+    font-size:60px;
+    text-align:center;
+}
+
+button{
+    padding:12px 25px;
+    border:none;
+    border-radius:20px;
+    background:gold;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:disabled{
+    background:#555;
+}
+
+.result{
+    margin-top:15px;
+    min-height:20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="machine">
+    <div class="title">🎰 VEGAS SLOT</div>
+    <div class="credits">Fichas: <span id="credit">10</span></div>
+
+    <div class="reels">
+        <div class="reel"><div class="strip" id="r1"></div></div>
+        <div class="reel"><div class="strip" id="r2"></div></div>
+        <div class="reel"><div class="strip" id="r3"></div></div>
+    </div>
+
+    <button onclick="spin()" id="spinBtn">Girar (1 ficha)</button>
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+let credit=10;
+
+const prizes=[
+{symbol:"🔔",chance:80,reward:1},
+{symbol:"🍒",chance:13,reward:2},
+{symbol:"🍋",chance:5,reward:4},
+{symbol:"💎",chance:1,reward:8},
+{symbol:"7️⃣",chance:0.001,reward:15}
+];
+
+function weighted(){
+let total=prizes.reduce((a,b)=>a+b.chance,0);
+let r=Math.random()*total;
+let sum=0;
+for(let p of prizes){
+sum+=p.chance;
+if(r<=sum) return p;
+}
+}
+
+function spinReel(id,finalSymbol,delay){
+let reel=document.getElementById(id);
+let position=0;
+let symbols=["🔔","🍒","🍋","💎","7️⃣"];
+
+let interval=setInterval(()=>{
+reel.innerHTML=symbols[Math.floor(Math.random()*symbols.length)];
+position++;
+},100);
+
+setTimeout(()=>{
+clearInterval(interval);
+reel.innerHTML=finalSymbol;
+},delay);
+}
+
+function spin(){
+
+if(credit<=0){alert("Sem fichas");return;}
+
+credit--;
+document.getElementById("credit").innerText=credit;
+document.getElementById("spinBtn").disabled=true;
+document.getElementById("result").innerText="Girando...";
+
+let p1=weighted();
+let p2=weighted();
+let p3=weighted();
+
+spinReel("r1",p1.symbol,1500);
+spinReel("r2",p2.symbol,2000);
+spinReel("r3",p3.symbol,2500);
+
+setTimeout(()=>{
+
+if(p1.symbol===p2.symbol && p2.symbol===p3.symbol){
+credit+=p1.reward;
+document.getElementById("credit").innerText=credit;
+document.getElementById("result").innerText="🎉 Você ganhou "+p1.reward+" fichas!";
+}else{
+document.getElementById("result").innerText="Tente novamente!";
+}
+
+document.getElementById("spinBtn").disabled=false;
+
+},2600);
+}
+</script>
+
+</body>
+</html>
