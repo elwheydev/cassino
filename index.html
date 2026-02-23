@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vegas Slot Demo</title>
+
+<style>
+body{
+    margin:0;
+    background:#1a0000;
+    font-family:Arial;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    color:#fff;
+}
+
+.machine{
+    width:340px;
+    background:#8b0000;
+    border:6px solid gold;
+    border-radius:20px;
+    padding:20px;
+    text-align:center;
+}
+
+.reels{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin:20px 0;
+}
+
+.reel{
+    width:80px;
+    height:100px;
+    background:#000;
+    border-radius:10px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:50px;
+}
+
+button{
+    padding:10px 20px;
+    border:none;
+    border-radius:15px;
+    background:gold;
+    font-weight:bold;
+}
+
+.result{
+    margin-top:10px;
+    height:20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="machine">
+    <h2>Vegas Slot</h2>
+
+    <div class="reels">
+        <div class="reel" id="r1">🔔</div>
+        <div class="reel" id="r2">🔔</div>
+        <div class="reel" id="r3">🔔</div>
+    </div>
+
+    <button onclick="spin()">Girar (1 ficha)</button>
+
+    <div>Fichas: <span id="credit">10</span></div>
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+var credit = 10;
+
+var prizes = [
+    {symbol:"🔔", chance:80, reward:1},
+    {symbol:"🍒", chance:13, reward:2},
+    {symbol:"🍋", chance:5, reward:4},
+    {symbol:"💎", chance:1, reward:8},
+    {symbol:"7️⃣", chance:0.001, reward:15}
+];
+
+function weighted(){
+    var total = 0;
+    var i;
+    for(i=0;i<prizes.length;i++){
+        total += prizes[i].chance;
+    }
+
+    var r = Math.random()*total;
+    var sum = 0;
+
+    for(i=0;i<prizes.length;i++){
+        sum += prizes[i].chance;
+        if(r <= sum){
+            return prizes[i];
+        }
+    }
+}
+
+function spin(){
+
+    if(credit <= 0){
+        alert("Sem fichas");
+        return;
+    }
+
+    credit--;
+    document.getElementById("credit").innerHTML = credit;
+    document.getElementById("result").innerHTML = "Girando...";
+
+    var p1 = weighted();
+    var p2 = weighted();
+    var p3 = weighted();
+
+    document.getElementById("r1").innerHTML = p1.symbol;
+    document.getElementById("r2").innerHTML = p2.symbol;
+    document.getElementById("r3").innerHTML = p3.symbol;
+
+    if(p1.symbol === p2.symbol && p2.symbol === p3.symbol){
+        credit += p1.reward;
+        document.getElementById("credit").innerHTML = credit;
+        document.getElementById("result").innerHTML = "Ganhou " + p1.reward + " fichas!";
+    }else{
+        document.getElementById("result").innerHTML = "Tente novamente!";
+    }
+}
+</script>
+
+</body>
+</html>
